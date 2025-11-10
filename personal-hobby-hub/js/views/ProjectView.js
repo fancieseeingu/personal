@@ -1,4 +1,3 @@
-// ProjectView - Renders the projects section
 export class ProjectView {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -6,6 +5,7 @@ export class ProjectView {
     }
 
     render(projects) {
+        if (!this.container) return;
         this.container.innerHTML = `
             <div class="projects-header">
                 <h2>My Creative Projects</h2>
@@ -28,7 +28,7 @@ export class ProjectView {
                 ${projects.length > 0 ? projects.map(project => this.renderProjectCard(project)).join('') : '<p>No projects yet. Start your first creative project!</p>'}
             </div>
         `;
-
+        // Attach listeners after render
         this.attachDOMListeners();
     }
 
@@ -54,7 +54,7 @@ export class ProjectView {
                     <h3>${project.title}</h3>
                     <p class="project-type">${typeIcon} ${project.type}</p>
                     <div class="status-badge ${project.status}">${project.status.replace('-', ' ')}</div>
-                    <p class="project-description">${project.description.substring(0, 100)}${project.description.length > 100 ? '...' : ''}</p>
+                    <p class="project-description">${project.description ? project.description.substring(0, 100) : ''}${project.description && project.description.length > 100 ? '...' : ''}</p>
                     ${project.estimatedTime ? `<p class="time-estimate">Est: ${project.estimatedTime}h</p>` : ''}
                     ${project.actualTime ? `<p class="time-actual">Actual: ${project.actualTime}h</p>` : ''}
                     ${materialCount > 0 ? `<p class="material-count">📦 ${materialCount} material${materialCount > 1 ? 's' : ''}</p>` : ''}
@@ -69,63 +69,81 @@ export class ProjectView {
     }
 
     attachDOMListeners() {
-        const addBtn = document.getElementById('add-project-btn');
+        if (!this.container) return;
+
+        // Add-project button (scoped to container)
+        const addBtn = this.container.querySelector('#add-project-btn');
         if (addBtn) {
-            addBtn.addEventListener('click', () => this.showAddProjectModal());
+            addBtn.removeEventListener?.('click', this._addClickHandler);
+            this._addClickHandler = () => this.showAddProjectModal();
+            addBtn.addEventListener('click', this._addClickHandler);
         }
 
-        document.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = parseInt(e.target.dataset.id);
-                this.showEditProjectModal(id);
-            });
-        });
-
-        document.querySelectorAll('.btn-delete').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = parseInt(e.target.dataset.id);
-                if (confirm('Are you sure you want to delete this project?')) {
-                    if (this.callbacks.onDeleteProject) {
-                        this.callbacks.onDeleteProject(id);
-                    }
-                }
-            });
-        });
-
-        document.querySelectorAll('.btn-gallery').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const id = parseInt(e.target.dataset.id);
-                this.showImageGallery(id);
-            });
-        });
-
-        document.querySelectorAll('.project-thumbnail, .project-thumbnail-placeholder').forEach(thumb => {
-            thumb.addEventListener('click', (e) => {
-                const id = parseInt(e.currentTarget.dataset.id);
-                if (this.callbacks.onGetProject) {
-                    const project = this.callbacks.onGetProject(id);
-                    if (project && project.images && project.images.length > 0) {
-                        this.showImageGallery(id);
-                    }
-                }
-            });
-        });
-
-        const typeFilter = document.getElementById('type-filter-project');
-        const statusFilter = document.getElementById('status-filter-project');
+        // Filters
+        const typeFilter = this.container.querySelector('#type-filter-project');
+        const statusFilter = this.container.querySelector('#status-filter-project');
 
         if (typeFilter) {
-            typeFilter.addEventListener('change', () => this.handleFilterChange());
+            typeFilter.removeEventListener?.('change', this._filterChangeHandler);
+            this._filterChangeHandler = () => this.handleFilterChange();
+            typeFilter.addEventListener('change', this._filterChangeHandler);
         }
         if (statusFilter) {
-            statusFilter.addEventListener('change', () => this.handleFilterChange());
+            statusFilter.removeEventListener?.('change', this._filterChangeHandler);
+            statusFilter.addEventListener('change', this._filterChangeHandler);
         }
+
+        // Event delegation on container for dynamic buttons and thumbnail clicks
+        if (this._delegateHandler) {
+            // remove existing to avoid duplicates
+            this.container.removeEventListener('click', this._delegateHandler);
+        }
+
+        this._delegateHandler = (e) => {
+            const btn = e.target.closest && e.target.closest('button');
+            const card = e.target.closest && e.target.closest('.project-card');
+
+            if (btn) {
+                if (btn.classList.contains('btn-edit')) {
+                    const id = Number(btn.dataset.id);
+                    this.showEditProjectModal(id);
+                    return;
+                }
+                if (btn.classList.contains('btn-delete')) {
+                    const id = Number(btn.dataset.id);
+                    if (confirm('Are you sure you want to delete this project?')) {
+                        if (this.callbacks.onDeleteProject) this.callbacks.onDeleteProject(id);
+                    }
+                    return;
+                }
+                if (btn.classList.contains('btn-gallery')) {
+                    const id = Number(btn.dataset.id);
+                    this.showImageGallery(id);
+                    return;
+                }
+            }
+
+            if (card) {
+                const thumb = e.target.closest && e.target.closest('.project-thumbnail, .project-thumbnail-placeholder');
+                if (thumb) {
+                    const id = Number(card.dataset.id);
+                    if (this.callbacks.onGetProject) {
+                        const project = this.callbacks.onGetProject(id);
+                        if (project && project.images && project.images.length > 0) {
+                            this.showImageGallery(id);
+                        }
+                    }
+                }
+            }
+        };
+
+        this.container.addEventListener('click', this._delegateHandler);
     }
 
     handleFilterChange() {
         const filters = {
-            type: document.getElementById('type-filter-project')?.value || '',
-            status: document.getElementById('status-filter-project')?.value || ''
+            type: this.container.querySelector('#type-filter-project')?.value || '',
+            status: this.container.querySelector('#status-filter-project')?.value || ''
         };
 
         if (this.callbacks.onFilterChange) {
@@ -244,7 +262,7 @@ export class ProjectView {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(form);
-            
+
             const projectData = {
                 title: formData.get('title'),
                 type: formData.get('type'),
@@ -255,7 +273,7 @@ export class ProjectView {
             };
 
             // Handle image uploads
-            const files = fileInput.files;
+            const files = fileInput?.files || [];
             if (files.length > 0) {
                 if (this.callbacks.onHandleImageUpload) {
                     try {
