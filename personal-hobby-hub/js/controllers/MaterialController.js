@@ -1,16 +1,21 @@
-class MaterialController {
+// Make sure this file exports the class as a named export so app.js can import it with:
+// import { MaterialController } from './controllers/MaterialController.js';
+export class MaterialController {
   constructor(storageService, materialView) {
     this.storageService = storageService;
     this.view = materialView;
     this.materials = [];
     this.filteredMaterials = [];
+    this.currentFilters = null;
   }
 
   init() {
-    this.materials = this.storageService.load(StorageService.KEYS.MATERIALS);
-    
-    // Reconstruct Material objects with methods
-    this.materials = this.materials.map(data => {
+    // use the passed storageService instance for keys/loads
+    const saved = this.storageService.load(this.storageService.KEYS.MATERIALS) || [];
+
+    // Reconstruct Material objects with methods (if you have a Material class available)
+    this.materials = saved.map(data => {
+      // If Material constructor or class isn't globally available, import or provide it.
       const material = new Material(
         data.id,
         data.name,
@@ -18,7 +23,7 @@ class MaterialController {
         data.quantity,
         data.location
       );
-      // Restore all properties
+      // Restore all properties saved in storage (including quantityHistory, dateAdded, etc.)
       Object.assign(material, data);
       return material;
     });
@@ -56,7 +61,11 @@ class MaterialController {
       materialData.quantity,
       materialData.location
     );
-    
+
+    // initialize metadata if needed
+    material.dateAdded = new Date().toISOString();
+    material.quantityHistory = material.quantityHistory || [];
+
     this.materials.push(material);
     this.save();
     this.applyCurrentFilters();
@@ -69,7 +78,7 @@ class MaterialController {
       if (updates.name !== undefined) material.name = updates.name;
       if (updates.category !== undefined) material.category = updates.category;
       if (updates.location !== undefined) material.location = updates.location;
-      
+
       this.save();
       this.applyCurrentFilters();
     }
@@ -85,8 +94,18 @@ class MaterialController {
     const material = this.materials.find(m => m.id === id);
     if (material) {
       // Use the Material model's updateQuantity method which handles history and stock status
-      material.updateQuantity(newQuantity);
-      
+      if (typeof material.updateQuantity === 'function') {
+        material.updateQuantity(newQuantity);
+      } else {
+        // fallback: update fields manually
+        const prev = material.quantity ?? 0;
+        material.quantityHistory = material.quantityHistory || [];
+        material.quantityHistory.push({ previousQuantity: prev, quantity: newQuantity, date: new Date().toISOString() });
+        material.quantity = newQuantity;
+        // Optionally update stockStatus
+        material.stockStatus = material.quantity > 0 ? 'in-stock' : 'out-of-stock';
+      }
+
       this.save();
       this.applyCurrentFilters();
     }
@@ -114,7 +133,7 @@ class MaterialController {
   }
 
   save() {
-    this.storageService.save(StorageService.KEYS.MATERIALS, this.materials);
+    this.storageService.save(this.storageService.KEYS.MATERIALS, this.materials);
   }
 
   getMaterials() {
