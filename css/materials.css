@@ -1,0 +1,200 @@
+/* Materials Section Styles */
+
+.materials-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.materials-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.materials-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.materials-filters select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.materials-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.material-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.material-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.material-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.material-header h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  flex: 1;
+}
+
+.stock-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.stock-badge.in_stock {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.stock-badge.low_stock {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.stock-badge.out_of_stock {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.material-details {
+  margin-bottom: 1rem;
+}
+
+.material-details p {
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.material-details .category {
+  text-transform: capitalize;
+}
+
+.material-details .quantity {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.material-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.material-actions button {
+  flex: 1;
+  min-width: 80px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.btn-quantity {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-quantity:hover {
+  background-color: #6854d4;
+}
+
+/* Quantity Modal Specific Styles */
+.quantity-history {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--background-color);
+  border-radius: 4px;
+}
+
+.quantity-history h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.quantity-history ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quantity-history li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.quantity-history li:last-child {
+  border-bottom: none;
+}
+
+.quantity-history .date {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .materials-list {
+    grid-template-columns: 1fr;
+  }
+
+  .materials-filters {
+    flex-direction: column;
+  }
+
+  .materials-filters select {
+    width: 100%;
+  }
+
+  .material-actions {
+    flex-direction: column;
+  }
+
+  .material-actions button {
+    width: 100%;
+  }
+}
