@@ -1,4 +1,6 @@
 // StorageService - Handles all localStorage operations
+import { Goal } from '../models/Goal.js';
+
 export class StorageService {
     static KEYS = {
         BOOKS: 'hobby_hub_books',
@@ -26,7 +28,18 @@ export class StorageService {
     static load(key) {
         try {
             const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : [];
+            const parsed = data ? JSON.parse(data) : [];
+            
+            // Restore Goal methods if loading goals
+            if (key === this.KEYS.GOALS && Array.isArray(parsed)) {
+                parsed.forEach(goal => {
+                    if (goal && !goal.getProgressPercentage) {
+                        Object.setPrototypeOf(goal, Goal.prototype);
+                    }
+                });
+            }
+            
+            return parsed;
         } catch (error) {
             console.error(`Error loading ${key}:`, error);
             return [];
@@ -56,5 +69,11 @@ export class StorageService {
             journals: this.load(this.KEYS.JOURNALS),
             goals: this.load(this.KEYS.GOALS)
         };
+    }
+    
+    static clearAll() {
+        Object.values(this.KEYS).forEach(key => {
+            localStorage.removeItem(key);
+        });
     }
 }

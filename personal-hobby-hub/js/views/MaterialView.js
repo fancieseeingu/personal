@@ -1,14 +1,16 @@
-class MaterialView {
+export class MaterialView {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
     this.callbacks = {};
   }
 
-  render(materials) {
+  render(materials = []) {
+    if (!this.container) return;
+
     this.container.innerHTML = `
       <div class="materials-header">
         <h2>Materials Inventory</h2>
-        <button id="add-material-btn" class="btn-primary">Add Material</button>
+        <button id="add-material-btn" class="btn btn-primary">Add Material</button>
       </div>
       <div class="materials-filters">
         <select id="category-filter">
@@ -39,36 +41,39 @@ class MaterialView {
   }
 
   renderMaterialCard(material) {
-    const stockStatusClass = material.stockStatus.replace('-', '_');
-    const stockStatusLabel = material.stockStatus.split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+    const stockStatus = material.stockStatus || '';
+    const stockStatusClass = stockStatus ? stockStatus.replace(/-/g, '_') : '';
+    const stockStatusLabel = stockStatus
+      ? stockStatus.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+      : 'Unknown';
+
+    const dateAdded = material.dateAdded ? new Date(material.dateAdded).toLocaleDateString() : '';
 
     return `
       <div class="material-card" data-id="${material.id}">
         <div class="material-header">
-          <h3>${material.name}</h3>
+          <h3>${material.name || ''}</h3>
           <span class="stock-badge ${stockStatusClass}">${stockStatusLabel}</span>
         </div>
         <div class="material-details">
-          <p class="category"><strong>Category:</strong> ${material.category}</p>
-          <p class="quantity"><strong>Quantity:</strong> ${material.quantity}</p>
-          <p class="location"><strong>Location:</strong> ${material.location}</p>
-          <p class="date-added"><strong>Added:</strong> ${new Date(material.dateAdded).toLocaleDateString()}</p>
+          <p class="category"><strong>Category:</strong> ${material.category || ''}</p>
+          <p class="quantity"><strong>Quantity:</strong> ${material.quantity ?? 0}</p>
+          <p class="location"><strong>Location:</strong> ${material.location || ''}</p>
+          <p class="date-added"><strong>Added:</strong> ${dateAdded}</p>
         </div>
         <div class="material-actions">
-          <button class="btn-edit" data-id="${material.id}">Edit</button>
-          <button class="btn-quantity" data-id="${material.id}">Update Quantity</button>
-          <button class="btn-delete" data-id="${material.id}">Delete</button>
+          <button class="btn-edit btn" data-id="${material.id}">Edit</button>
+          <button class="btn-quantity btn" data-id="${material.id}">Update Quantity</button>
+          <button class="btn-delete btn" data-id="${material.id}">Delete</button>
         </div>
       </div>
     `;
   }
 
+  // show add modal (modal uses modal.querySelector to scope fields)
   showAddMaterialModal() {
     const modal = document.createElement('div');
     modal.className = 'modal';
-    modal.id = 'material-modal';
     modal.innerHTML = `
       <div class="modal-content">
         <div class="modal-header">
@@ -110,44 +115,37 @@ class MaterialView {
     `;
 
     document.body.appendChild(modal);
-    modal.style.display = 'flex';
+    modal.classList.add('active');
 
     const form = modal.querySelector('#material-form');
     const closeBtn = modal.querySelector('.modal-close');
     const cancelBtn = modal.querySelector('.modal-cancel');
 
-    const closeModal = () => {
-      modal.remove();
-    };
+    const closeModal = () => modal.remove();
 
     closeBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      
       const materialData = {
-        name: document.getElementById('material-name').value,
-        category: document.getElementById('material-category').value,
-        quantity: parseInt(document.getElementById('material-quantity').value),
-        location: document.getElementById('material-location').value
+        name: modal.querySelector('#material-name').value,
+        category: modal.querySelector('#material-category').value,
+        quantity: parseInt(modal.querySelector('#material-quantity').value, 10) || 0,
+        location: modal.querySelector('#material-location').value,
+        dateAdded: new Date().toISOString(),
+        quantityHistory: []
       };
-
-      if (this.callbacks.onAddMaterial) {
-        this.callbacks.onAddMaterial(materialData);
-      }
-
+      if (this.callbacks.onAddMaterial) this.callbacks.onAddMaterial(materialData);
       closeModal();
     });
   }
 
   showEditMaterialModal(material) {
+    if (!material) return;
     const modal = document.createElement('div');
     modal.className = 'modal';
-    modal.id = 'material-modal';
     modal.innerHTML = `
       <div class="modal-content">
         <div class="modal-header">
@@ -157,7 +155,7 @@ class MaterialView {
         <form id="material-form">
           <div class="form-group">
             <label for="material-name">Name *</label>
-            <input type="text" id="material-name" value="${material.name}" required>
+            <input type="text" id="material-name" value="${material.name || ''}" required>
           </div>
           <div class="form-group">
             <label for="material-category">Category *</label>
@@ -174,7 +172,7 @@ class MaterialView {
           </div>
           <div class="form-group">
             <label for="material-location">Location *</label>
-            <input type="text" id="material-location" value="${material.location}" required>
+            <input type="text" id="material-location" value="${material.location || ''}" required>
           </div>
           <div class="form-actions">
             <button type="button" class="btn-secondary modal-cancel">Cancel</button>
@@ -185,43 +183,34 @@ class MaterialView {
     `;
 
     document.body.appendChild(modal);
-    modal.style.display = 'flex';
+    modal.classList.add('active');
 
     const form = modal.querySelector('#material-form');
     const closeBtn = modal.querySelector('.modal-close');
     const cancelBtn = modal.querySelector('.modal-cancel');
 
-    const closeModal = () => {
-      modal.remove();
-    };
+    const closeModal = () => modal.remove();
 
     closeBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      
       const updates = {
-        name: document.getElementById('material-name').value,
-        category: document.getElementById('material-category').value,
-        location: document.getElementById('material-location').value
+        name: modal.querySelector('#material-name').value,
+        category: modal.querySelector('#material-category').value,
+        location: modal.querySelector('#material-location').value
       };
-
-      if (this.callbacks.onUpdateMaterial) {
-        this.callbacks.onUpdateMaterial(material.id, updates);
-      }
-
+      if (this.callbacks.onUpdateMaterial) this.callbacks.onUpdateMaterial(material.id, updates);
       closeModal();
     });
   }
 
   showUpdateQuantityModal(material) {
+    if (!material) return;
     const modal = document.createElement('div');
     modal.className = 'modal';
-    modal.id = 'quantity-modal';
     modal.innerHTML = `
       <div class="modal-content">
         <div class="modal-header">
@@ -230,13 +219,13 @@ class MaterialView {
         </div>
         <form id="quantity-form">
           <div class="form-group">
-            <label>Current Quantity: <strong>${material.quantity}</strong></label>
+            <label>Current Quantity: <strong>${material.quantity ?? 0}</strong></label>
           </div>
           <div class="form-group">
             <label for="new-quantity">New Quantity *</label>
-            <input type="number" id="new-quantity" min="0" value="${material.quantity}" required>
+            <input type="number" id="new-quantity" min="0" value="${material.quantity ?? 0}" required>
           </div>
-          ${material.quantityHistory.length > 0 ? `
+          ${Array.isArray(material.quantityHistory) && material.quantityHistory.length > 0 ? `
             <div class="quantity-history">
               <h4>Recent Changes</h4>
               <ul>
@@ -258,123 +247,96 @@ class MaterialView {
     `;
 
     document.body.appendChild(modal);
-    modal.style.display = 'flex';
+    modal.classList.add('active');
 
     const form = modal.querySelector('#quantity-form');
     const closeBtn = modal.querySelector('.modal-close');
     const cancelBtn = modal.querySelector('.modal-cancel');
 
-    const closeModal = () => {
-      modal.remove();
-    };
+    const closeModal = () => modal.remove();
 
     closeBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      
-      const newQuantity = parseInt(document.getElementById('new-quantity').value);
-
-      if (this.callbacks.onUpdateQuantity) {
-        this.callbacks.onUpdateQuantity(material.id, newQuantity);
-      }
-
+      const newQuantity = parseInt(modal.querySelector('#new-quantity').value, 10) || 0;
+      if (this.callbacks.onUpdateQuantity) this.callbacks.onUpdateQuantity(material.id, newQuantity);
       closeModal();
     });
   }
 
   attachDOMListeners() {
-    const addBtn = document.getElementById('add-material-btn');
+    if (!this.container) return;
+
+    // Add button
+    const addBtn = this.container.querySelector('#add-material-btn');
     if (addBtn) {
-      addBtn.addEventListener('click', () => {
-        this.showAddMaterialModal();
-      });
+      addBtn.removeEventListener?.('click', this._addHandler);
+      this._addHandler = () => this.showAddMaterialModal();
+      addBtn.addEventListener('click', this._addHandler);
     }
 
-    document.querySelectorAll('.btn-edit').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = parseInt(e.target.dataset.id);
-        if (this.callbacks.onEditClick) {
-          this.callbacks.onEditClick(id);
-        }
-      });
-    });
-
-    document.querySelectorAll('.btn-quantity').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = parseInt(e.target.dataset.id);
-        if (this.callbacks.onQuantityClick) {
-          this.callbacks.onQuantityClick(id);
-        }
-      });
-    });
-
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const id = parseInt(e.target.dataset.id);
-        if (confirm('Are you sure you want to delete this material?')) {
-          if (this.callbacks.onDeleteMaterial) {
-            this.callbacks.onDeleteMaterial(id);
-          }
-        }
-      });
-    });
-
-    const categoryFilter = document.getElementById('category-filter');
-    const stockFilter = document.getElementById('stock-filter');
+    // Filters
+    const categoryFilter = this.container.querySelector('#category-filter');
+    const stockFilter = this.container.querySelector('#stock-filter');
 
     if (categoryFilter) {
-      categoryFilter.addEventListener('change', (e) => {
+      categoryFilter.removeEventListener?.('change', this._filterChangeHandler);
+      this._filterChangeHandler = (e) => {
         if (this.callbacks.onFilterChange) {
           this.callbacks.onFilterChange({
             category: e.target.value,
             stockStatus: stockFilter?.value || ''
           });
         }
-      });
+      };
+      categoryFilter.addEventListener('change', this._filterChangeHandler);
     }
 
     if (stockFilter) {
-      stockFilter.addEventListener('change', (e) => {
-        if (this.callbacks.onFilterChange) {
-          this.callbacks.onFilterChange({
-            category: categoryFilter?.value || '',
-            stockStatus: e.target.value
-          });
-        }
-      });
+      stockFilter.removeEventListener?.('change', this._filterChangeHandler);
+      stockFilter.addEventListener('change', this._filterChangeHandler);
     }
+
+    // Delegated click handler for items inside the container
+    if (this._delegateHandler) this.container.removeEventListener('click', this._delegateHandler);
+
+    this._delegateHandler = (e) => {
+      const btn = e.target.closest && e.target.closest('button');
+      const card = e.target.closest && e.target.closest('.material-card');
+
+      if (btn) {
+        if (btn.classList.contains('btn-edit')) {
+          const id = Number(btn.dataset.id);
+          if (this.callbacks.onEditClick) this.callbacks.onEditClick(id);
+          return;
+        }
+        if (btn.classList.contains('btn-quantity')) {
+          const id = Number(btn.dataset.id);
+          if (this.callbacks.onQuantityClick) this.callbacks.onQuantityClick(id);
+          return;
+        }
+        if (btn.classList.contains('btn-delete')) {
+          const id = Number(btn.dataset.id);
+          if (confirm('Are you sure you want to delete this material?')) {
+            if (this.callbacks.onDeleteMaterial) this.callbacks.onDeleteMaterial(id);
+          }
+          return;
+        }
+      }
+    };
+
+    this.container.addEventListener('click', this._delegateHandler);
   }
 
-  onAddMaterial(callback) {
-    this.callbacks.onAddMaterial = callback;
-  }
-
-  onUpdateMaterial(callback) {
-    this.callbacks.onUpdateMaterial = callback;
-  }
-
-  onDeleteMaterial(callback) {
-    this.callbacks.onDeleteMaterial = callback;
-  }
-
-  onUpdateQuantity(callback) {
-    this.callbacks.onUpdateQuantity = callback;
-  }
-
-  onEditClick(callback) {
-    this.callbacks.onEditClick = callback;
-  }
-
-  onQuantityClick(callback) {
-    this.callbacks.onQuantityClick = callback;
-  }
-
-  onFilterChange(callback) {
-    this.callbacks.onFilterChange = callback;
-  }
+  // callback setters
+  onAddMaterial(callback) { this.callbacks.onAddMaterial = callback; }
+  onUpdateMaterial(callback) { this.callbacks.onUpdateMaterial = callback; }
+  onDeleteMaterial(callback) { this.callbacks.onDeleteMaterial = callback; }
+  onUpdateQuantity(callback) { this.callbacks.onUpdateQuantity = callback; }
+  onEditClick(callback) { this.callbacks.onEditClick = callback; } // controller should fetch material and call showEditMaterialModal
+  onQuantityClick(callback) { this.callbacks.onQuantityClick = callback; } // controller should fetch material and call showUpdateQuantityModal
+  onFilterChange(callback) { this.callbacks.onFilterChange = callback; }
 }
