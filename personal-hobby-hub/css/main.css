@@ -1,15 +1,60 @@
-/* CSS Variables - Color Scheme */
+/* Theme: Cute Aesthetic Pastel Dream 💕✨
+   Design Philosophy: Soft, dreamy, and adorable with pastel colors
+   
+   Color Palette:
+   - #E5A2AA (Pastel Pink) - Sweet & cute accents
+   - #6B3C2E (Irish Coffee) - Warm & cozy primary
+   - #E6E0C4 (Pearl Brush) - Soft neutral background
+   - #86ABCB (Glacier Blue) - Cool & calming accent
+   
+   Vibe: Aesthetic, cutesy, simple, and dreamy ☁️🌸
+   
+   Typography:
+   - Playfair Display: Elegant serif for headings
+   - Lato: Clean sans-serif for body text
+*/
+
+/* CSS Variables - Rich & Vibrant Aesthetic Color Scheme */
 :root {
-    --primary-color: #4A90E2;
-    --secondary-color: #7B68EE;
-    --success-color: #50C878;
-    --warning-color: #FFB347;
-    --background-color: #F5F7FA;
-    --text-color: #2C3E50;
+    /* Core Rich Palette � */
+    --pastel-pink: #D87B8A;
+    --irish-coffee: #6B3C2E;
+    --pearl-brush: #C9BFA0;
+    --glacier-blue: #5A8AAF;
+
+    /* Semantic Usage */
+    --primary-color: var(--irish-coffee);
+    --secondary-color: var(--glacier-blue);
+    --accent-color: var(--pastel-pink);
+    --surface-color: var(--pearl-brush);
+
+    /* Backgrounds - Richer */
+    --background-color: #F5EFE6;
     --card-bg: #FFFFFF;
-    --border-color: #E1E8ED;
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    /* Text */
+    --text-color: var(--irish-coffee);
+    --text-muted: #8B7A6E;
+    --text-on-primary: #FFFFFF;
+    --text-on-accent: #FFFFFF;
+
+    /* Borders & Shadows - More Visible */
+    --border-color: rgba(216, 123, 138, 0.3);
+    --shadow: 0 2px 8px rgba(107, 60, 46, 0.15);
+    --shadow-hover: 0 4px 16px rgba(107, 60, 46, 0.25);
+
+    /* Interactive States */
+    --hover-bg: rgba(216, 123, 138, 0.15);
+    --focus-ring: rgba(216, 123, 138, 0.3);
+
+    /* Status Colors - Richer Versions */
+    --success-color: #7AB88F;
+    --warning-color: #E8B86D;
+    --danger-color: var(--pastel-pink);
+
+    /* Typography */
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Lato', -apple-system, sans-serif;
 }
 
 /* Base Styles */
@@ -20,28 +65,41 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: var(--background-color);
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 16px;
+    background: var(--background-color);
     color: var(--text-color);
-    line-height: 1.6;
+    line-height: 1.8;
+    min-height: 100vh;
+    letter-spacing: 0.3px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Navigation */
+/* Navigation - Rich & Aesthetic 💕 */
 .main-nav {
-    background-color: var(--card-bg);
-    box-shadow: var(--shadow);
-    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 2px 20px rgba(107, 60, 46, 0.15);
+    padding: 1.5rem 3rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: sticky;
     top: 0;
     z-index: 100;
+    border-bottom: 3px solid var(--pastel-pink);
 }
 
 .nav-brand h1 {
-    color: var(--primary-color);
-    font-size: 1.5rem;
+    font-family: var(--font-heading);
+    color: var(--pastel-pink);
+    font-size: 1.875rem;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(216, 123, 138, 0.3);
 }
 
 .nav-menu {
@@ -52,31 +110,53 @@ body {
 
 .nav-link {
     text-decoration: none;
-    color: var(--text-color);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    color: var(--irish-coffee);
+    padding: 0.6rem 1.25rem;
+    border-radius: 20px;
     transition: all 0.3s ease;
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.5px;
 }
 
 .nav-link:hover {
-    background-color: var(--background-color);
+    color: var(--pastel-pink);
+    background-color: var(--hover-bg);
+    transform: translateY(-2px);
 }
 
 .nav-link.active {
-    background-color: var(--primary-color);
-    color: white;
+    background: var(--pastel-pink);
+    color: #FFFFFF;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(229, 162, 170, 0.3);
 }
 
+/* Search inside nav - Cute Style */
 .nav-search input {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    width: 250px;
+    padding: 0.7rem 1.5rem;
+    border: 2px solid var(--pastel-pink);
+    border-radius: 25px;
+    width: 260px;
     outline: none;
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--text-color);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 300;
+    transition: all 0.3s ease;
+}
+
+.nav-search input::placeholder {
+    color: var(--text-muted);
+    font-weight: 300;
 }
 
 .nav-search input:focus {
-    border-color: var(--primary-color);
+    border-color: var(--glacier-blue);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 4px var(--focus-ring);
+    transform: scale(1.02);
 }
 
 /* Main Content */
@@ -86,26 +166,342 @@ body {
     padding: 0 2rem;
 }
 
+/* Sections */
 .section {
     display: none;
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.28s ease-in-out, transform 0.28s ease-in-out;
 }
 
 .section.active {
     display: block;
-    animation: fadeIn 0.3s ease-in-out forwards;
+    animation: fadeIn 0.28s ease-in-out forwards;
 }
 
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(8px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Cards / panels - Rich & Vibrant */
+.card,
+.project-card,
+.material-card,
+.section-panel {
+    background: #FFFFFF;
+    border: 2px solid var(--pastel-pink);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 24px;
+    transition: all 0.3s ease;
+}
+
+.card:hover,
+.project-card:hover,
+.material-card:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: var(--glacier-blue);
+    transform: translateY(-4px);
+}
+
+/* Buttons - Cute & Aesthetic 🌸 */
+.btn {
+    border-radius: 20px;
+    padding: 10px 24px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--pastel-pink);
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(229, 162, 170, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(229, 162, 170, 0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--pastel-pink);
+    border-color: var(--pastel-pink);
+}
+
+.btn-secondary:hover {
+    background: var(--pastel-pink);
+    color: #FFFFFF;
+}
+
+.btn-edit {
+    background: var(--glacier-blue);
+    color: #FFFFFF;
+    border-color: var(--glacier-blue);
+    padding: 6px 16px;
+    font-size: 13px;
+}
+
+.btn-edit:hover {
+    background: #6A94B5;
+    transform: translateY(-1px);
+}
+
+.btn-delete,
+.btn-danger {
+    background: transparent;
+    color: var(--pastel-pink);
+    border-color: var(--pastel-pink);
+    padding: 6px 16px;
+    font-size: 13px;
+}
+
+.btn-delete:hover,
+.btn-danger:hover {
+    background: var(--danger-color);
+    color: #FFFFFF;
+}
+
+/* Form controls */
+.form-input,
+.form-select,
+.form-textarea {
+    border: 2px solid var(--border-color);
+    background: #FFFFFF;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--text-color);
+    width: 100%;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--rich-brown);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.form-label {
+    color: var(--rich-brown);
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+/* Project / material layouts */
+.project-card,
+.material-card {
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.project-thumbnail img {
+    border-radius: 8px;
+    max-width: 140px;
+    height: auto;
+    display: block;
+}
+
+/* Badges & statuses - Cute & Soft 🎀 */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 500;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid transparent;
+    font-family: var(--font-body);
+}
+
+/* Status color mappings - Rich & Vibrant */
+.status-badge.to-read,
+.status-badge.planning {
+    background: var(--pearl-brush);
+    color: var(--irish-coffee);
+    border-color: var(--pearl-brush);
+}
+
+.status-badge.reading,
+.status-badge.in-progress,
+.status-badge.watching {
+    background: var(--glacier-blue);
+    color: #FFFFFF;
+    border-color: var(--glacier-blue);
+}
+
+.status-badge.completed,
+.status-badge.finished {
+    background: var(--pastel-pink);
+    color: #FFFFFF;
+    border-color: var(--pastel-pink);
+}
+
+.status-badge.active {
+    background: var(--success-color);
+    color: #FFFFFF;
+    border-color: var(--success-color);
+}
+
+.status-badge.expired {
+    background: var(--danger-color);
+    color: #FFFFFF;
+    border-color: var(--danger-color);
+}
+
+/* Modal & Lightbox */
+.modal,
+.lightbox {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(44, 24, 16, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1500;
+}
+
+.modal-content,
+.lightbox-content {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 24px;
+    width: min(920px, 96%);
+    max-height: 90vh;
+    overflow: auto;
+    border: 3px solid var(--border-color);
+    box-shadow: 0 20px 60px rgba(229, 162, 170, 0.3);
+}
+
+.modal-content h2,
+.lightbox-content h2 {
+    color: var(--pastel-pink);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--pastel-pink);
+    padding-bottom: 10px;
+}
+
+.close {
+    color: var(--text-muted);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close:hover {
+    color: var(--pastel-pink);
+}
+
+/* Search modal specifics */
+.search-modal-content {
+    background: #FFFFFF;
+}
+
+/* Toasts */
+.toast-container {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2000;
+}
+
+.toast {
+    margin-top: 10px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    color: #FFFFFF;
+    background: var(--irish-coffee);
+    box-shadow: 0 8px 24px rgba(107, 60, 46, 0.3);
+    border: 2px solid var(--pastel-pink);
+    font-weight: 500;
+}
+
+.toast-success {
+    background: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.toast-error {
+    background: var(--pastel-pink);
+    border-color: var(--pastel-pink);
+}
+
+/* Helpers */
+.text-muted {
+    color: var(--text-muted);
+}
+
+.shadow-soft {
+    box-shadow: 0 6px 18px rgba(121, 79, 48, 0.08);
+}
+
+/* Headings - Cute & Aesthetic Typography 💕 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+    color: var(--pastel-pink);
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 1px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(229, 162, 170, 0.2);
+}
+
+h2 {
+    font-size: 1.875rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--pastel-pink);
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--irish-coffee);
+}
+
+h4 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--irish-coffee);
+}
+
+p {
+    margin-bottom: 1rem;
+    line-height: 1.8;
 }
 
 /* Responsive Design - Mobile */
@@ -132,6 +528,10 @@ body {
 
     .main-content {
         padding: 0 1rem;
+    }
+
+    .project-thumbnail img {
+        max-width: 100px;
     }
 }
 
